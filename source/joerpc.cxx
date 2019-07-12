@@ -100,7 +100,7 @@ int main() {
 
         if(joe_process_id == 0) {
             std::cout << "Waiting for Joe.exe ..." << std::endl;
-            std::time_t time_acquired = NULL;
+            time_acquired = NULL;
             Discord_ClearPresence();
             continue;
         }
@@ -109,7 +109,7 @@ int main() {
 
         if(joe_process_handle == nullptr) {
             std::cout << "Waiting for non-null handle." << std::endl;
-            std::time_t time_acquired = NULL;
+            time_acquired = NULL;
             Discord_ClearPresence();
             continue;
         }
@@ -118,12 +118,12 @@ int main() {
         
         if(joewin_module_address == NULL) {
             std::cout << "Waiting for a valid joewin.dll module address." << std::endl;
-            std::time_t time_acquired = NULL;
+            time_acquired = NULL;
             Discord_ClearPresence();
             continue;
         }
 
-        if(!time_acquired) time_acquired = std::time(nullptr);
+        if(time_acquired == NULL) time_acquired = std::time(nullptr);
 
         uint64_t joewin_string_address = joewin_module_address + 0xCBA08;
         std::vector<char> characters;
