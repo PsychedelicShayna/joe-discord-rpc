@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 bool IsProcessRunning(const char* process_image) {
     void* snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -22,16 +23,37 @@ bool IsProcessRunning(const char* process_image) {
     return false;
 }
 
+std::vector<std::string> SplitString(const std::string& string, const char token) {
+    std::istringstream stream(string);
+    std::vector<std::string> entries;
+    for(std::string entry; std::getline(stream, entry, token); entries.emplace_back(entry));
+    return entries;
+}
+
 int main(int argc, char** argv) {
-    std::stringstream launch_command_stream;
-    launch_command_stream << "./Joe.exe";
+    std::stringstream joe_launch_command_stream;
+
+    char module_filename[512];
+    ZeroMemory(module_filename, 512);
+    GetModuleFileNameA(NULL, module_filename, 512);
+
+    std::vector<std::string> module_split = SplitString(module_filename, '\\');
+    module_split.erase(module_split.end()-1);
+
+    std::string module_path;
+    for(std::size_t i=0; i<module_split.size(); ++i) {
+        module_path += module_split.at(i);
+        module_path += '\\';
+    }
+    
+    joe_launch_command_stream << '"' << module_path << "Joe.exe" << '"';
     for(std::size_t i=1; i<argc; ++i) {
-        launch_command_stream << " " << argv[i];
+        joe_launch_command_stream << " " << argv[i];
     }
 
-    const std::string launch_command_string = launch_command_stream.str();
-    char* launch_command = new char[launch_command_string.size()];
-    strcpy(launch_command, launch_command_string.c_str());
+    const std::string joe_launch_command_string = joe_launch_command_stream.str();
+    char* joe_launch_command = new char[joe_launch_command_string.size()];
+    strcpy(joe_launch_command, joe_launch_command_string.c_str());
 
     STARTUPINFO joe_suinfo = {sizeof(STARTUPINFO)};
     STARTUPINFO rpc_suinfo = {sizeof(STARTUPINFO)};
@@ -44,15 +66,19 @@ int main(int argc, char** argv) {
     ZeroMemory(&joe_prinfo, sizeof(PROCESS_INFORMATION));
     ZeroMemory(&rpc_prinfo, sizeof(PROCESS_INFORMATION));
 
-    std::cout << "Launch command: " << launch_command << std::endl;
-    if(!CreateProcess(nullptr, launch_command, NULL, NULL, false, 0, NULL, NULL, &joe_suinfo, &joe_prinfo)) {
-        std::cout << "Failed to create process with launch command: " << launch_command << std::endl;
+    if(!CreateProcess(nullptr, joe_launch_command, NULL, NULL, false, 0, NULL, NULL, &joe_suinfo, &joe_prinfo)) {
+        std::cout << "Failed to create process with launch command: " << joe_launch_command << std::endl;
     }
         
     if(!IsProcessRunning("joerpc.exe")) {
-        char* joerpc_launch_command = const_cast<char*>("./joerpc.exe");
-        if(!CreateProcess(nullptr, joerpc_launch_command, NULL, NULL, false, DETACHED_PROCESS, NULL, NULL, &joe_suinfo, &joe_prinfo)) {
-            std::cout << "Failed to create process with launch command: " << launch_command << std::endl;
+        std::stringstream rpc_launch_command_stream;
+        rpc_launch_command_stream << '"' << module_path << "joerpc.exe" << '"';
+        
+        const std::string& rpc_launch_command_string = rpc_launch_command_stream.str();
+        char* rpc_launch_command = const_cast<char*>(rpc_launch_command_string.c_str());
+
+        if(!CreateProcess(nullptr, rpc_launch_command, NULL, NULL, false, DETACHED_PROCESS, NULL, NULL, &rpc_suinfo, &rpc_prinfo)) {
+            std::cout << "Failed to create process with launch command: " << rpc_launch_command << std::endl;
         }
     }
 
