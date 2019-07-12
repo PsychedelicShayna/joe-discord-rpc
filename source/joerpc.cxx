@@ -168,7 +168,9 @@ int main() {
             {"JSON",                {"json"}},
             {"Binary",              {"bin"}},
             {"XML",                 {"xml"}},
-            {"Powershell(Script)",  {"ps", "powershell"}}
+            {"Powershell Script",   {"ps", "powershell"}},
+            {"Command Script",      {"cmd", "bat"}},
+            {"Plain Text",          {"txt"}}
         };
 
         const static std::vector<std::pair<std::string, std::vector<std::string>>> asset_resolver {
@@ -188,7 +190,9 @@ int main() {
             {"json",                {"json"}},
             {"bin",                 {"bin"}},
             {"xml",                 {"xml"}},
-            {"ps",                  {"ps", "powershell"}}
+            {"ps",                  {"ps", "powershell"}},
+            {"ps",                  {"cmd", "bat"}},
+            {"plain",               {"txt"}}
         };
 
         std::string file_language;
