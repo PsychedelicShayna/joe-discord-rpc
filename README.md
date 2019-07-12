@@ -20,3 +20,5 @@ Bundled with the repository comes two (MIT open source) libraries necessary for 
 * [Discord-RPC](https://github.com/discordapp/discord-rpc)
 * [Rapid-JSON](https://github.com/Tencent/rapidjson)
 
+## Preview
+![](https://i.imgur.com/EAWZ6Va.png)
