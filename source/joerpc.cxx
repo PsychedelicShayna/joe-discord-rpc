@@ -215,7 +215,7 @@ int main() {
         DiscordRichPresence discord_rich_presence;
         memset(&discord_rich_presence, 0x00, sizeof(DiscordRichPresence));
         
-        std::string state = "Editing in ";
+        std::string state = "File type: ";
         state += file_language;
 
         std::string details = "Editing ";
