@@ -22,6 +22,8 @@ builds/joerpc.exe: objects/main.o $(addprefix objects/, $(addsuffix .o, $(deps))
 builds/joel.exe: objects/joerpcl.o
 	mkdir -p builds
 	clang++ objects/joerpcl.o -o builds/joel.exe $(joel_flags)
+	
+all: builds/joerpc.exe builds/joel.exe
 
 objects/joerpcl.o: joerpcl.cxx
 	mkdir -p objects
